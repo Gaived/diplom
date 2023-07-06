@@ -7,7 +7,7 @@ import java.util.*;
 
 
 public class BooleanSearchEngine implements SearchEngine {
-    Map<String, List<PageEntry>> foundWords = new HashMap<>();
+    private Map<String, List<PageEntry>> foundWords = new HashMap<>();
 
     public BooleanSearchEngine(File pdfsDir) throws IOException {
         List<File> filesInDirectory = new ArrayList<>(Arrays.asList(pdfsDir.listFiles()));
@@ -32,15 +32,22 @@ public class BooleanSearchEngine implements SearchEngine {
                         numberOfWords = new ArrayList<>();
                     }
                     numberOfWords.add(new PageEntry(filesInDirectory.get(i).getName(), pageNumber, word.getValue()));
-                    Collections.sort(numberOfWords, Collections.reverseOrder());
                     foundWords.put(word.getKey(), numberOfWords);
                 }
             }
+        }
+        for (List<PageEntry> entries : foundWords.values()) {
+            Collections.sort(entries, Collections.reverseOrder());
         }
     }
 
     @Override
     public List<PageEntry> search(String word) {
-        return foundWords.get(word.toLowerCase());
+        return foundWords.getOrDefault(word.toLowerCase(), List.of());
     }
+
+    public Map<String, List<PageEntry>> getFoundWords() {
+        return foundWords;
+    }
+
 }
